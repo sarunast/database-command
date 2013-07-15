@@ -52,7 +52,7 @@ class EDatabaseCommand extends CConsoleCommand
     /**
      * @var string whether to disable foreign key checks
      */
-    public $foreignKeyChecks = false;
+    public $foreignKeyChecks = true;
 
     /**
      * @var string dump only table with the given prefix
@@ -190,18 +190,6 @@ EOS;
 
         echo "\n\nMigration class successfully created at \n$filename\n\n";
 
-        if ($this->_displayFkWarning) {
-            echo <<<EOS
-WARNING
-Your database include Foreign Keys definitions. Sadly Yii methods don't allow to know the details of the relation, precisely
-ON DELETE and ON UPDATE conditions.
-Please open the generated file, look for lines with "FIX RELATIONS" comment and adjust them according to your database.
-For details about the addForeignKey definition please see here:
-    http://www.yiiframework.com/doc/api/1.1/CDbMigration#addForeignKey-detail
-
-
-EOS;
-        }
     }
 
     private function indent($level = 0)
