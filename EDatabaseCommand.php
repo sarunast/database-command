@@ -266,8 +266,8 @@ EOS;
     private function generateIndexes($table, $schema)
     {
         $indexes = Yii::app()->db->createCommand(
-            "SHOW INDEX FROM " . $table->name . "
-      WHERE Key_name != 'PRIMARY'"
+          "SHOW INDEX FROM `" . $table->name . "`
+          WHERE Key_name != 'PRIMARY'"
         )->queryAll();
 
         if (count($indexes) == 0) {
