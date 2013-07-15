@@ -52,7 +52,7 @@ class EDatabaseCommand extends CConsoleCommand
     /**
      * @var string whether to disable foreign key checks
      */
-    public $foreignKeyChecks = true;
+    public $foreignKeyChecks = false;
 
     /**
      * @var string dump only table with the given prefix
@@ -99,7 +99,7 @@ dump [<name>] [--prefix=<table_prefix,...>] [--dbConnection=<db>]
     [--truncateTable=<0|1>] [--migrationPath=<application.runtime>]
 
     //////To get only schema
-    php yiic database dump all_schema --insertData=0
+    database dump all_schema --insertData=0
 
 
 EOS;
@@ -252,7 +252,7 @@ EOS;
 
         $i = 1;
         foreach ($table->foreignKeys as $name => $foreignKey) {
-            $code .= $this->indent(3) . "\$this->addForeignKey('fk_{$table->name}_{$i}', '{$table->name}', '{$name}', '{$foreignKey[0]}', '{$foreignKey[1]}', '{$foreignKey[2]}', '{$foreignKey[3]}'); // FIX RELATIONS \n";
+            $code .= $this->indent(3) . "\$this->addForeignKey('fk_{$table->name}_{$i}', '{$table->name}', '{$name}', '{$foreignKey[0]}', '{$foreignKey[1]}', '{$foreignKey[2]}', '{$foreignKey[3]}');\n";
             $i++;
         }
 

@@ -83,11 +83,22 @@ Configuration
 
 `config/console.php`
 
-    'commandMap' => array(
-        'database' => array(
-            'class' => 'vendor.schmunk42.database-command.EDatabaseCommand',
-        ),
-    )
+  'commandMap' => array(
+    'database' => array(
+        'class' => 'application.vendor.database-command.EDatabaseCommand',
+    ),
+  ),
+  'components'=>array(
+    'db'=>array(
+      'connectionString' => 'mysql:host=192.168.0.1;dbname=db_name',
+      'username' => 'user',
+      'password' => 'pw',
+      'emulatePrepare' => true,
+      'enableProfiling' => true,
+      'charset' => 'utf8',
+      'driverMap'=>array(
+       'mysql' => 'application.vendor.database-command.db.MysqlSchema'
+),
 
 Resources
 ---------
