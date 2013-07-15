@@ -209,19 +209,6 @@ EOS;
       return str_repeat("  ", $level);
     }
 
-    private function firstLetters($string, $delimiter = "_")
-    {
-        $words = explode($delimiter, $string);
-
-        $acronym = "";
-
-        foreach ($words as $w) {
-            $acronym .= $w[0];
-        }
-
-        return $acronym;
-    }
-
     private function generateSchema($table, $schema)
     {
       $options = "ENGINE=InnoDB DEFAULT CHARSET=utf8";
@@ -263,8 +250,10 @@ EOS;
         $code .= $this->indent(2) . "if ((Yii::app()->db->schema instanceof CSqliteSchema) == false):\n";
       }
 
+      $i = 1;
       foreach ($table->foreignKeys as $name => $foreignKey) {
-        $code .= $this->indent(3) . "\$this->addForeignKey('fk_{$this->firstLetters($table->name)}_{$this->firstLetters($foreignKey[0])}_{$name}', '{$table->name}', '{$name}', '{$foreignKey[0]}', '{$foreignKey[1]}', 'CASCADE', 'CASCADE'); // FIX RELATIONS \n";
+        $code .= $this->indent(3) . "\$this->addForeignKey('fk_{$table->name}_{$i}', '{$table->name}', '{$name}', '{$foreignKey[0]}', '{$foreignKey[1]}', 'CASCADE', 'CASCADE'); // FIX RELATIONS \n";
+        $i++;
       }
 
       if(!$this->ignoreSQLiteChecks){
@@ -312,8 +301,10 @@ EOS;
       return false;
     }
 
+    $i = 1;
     foreach ($addIndexes as $index) {
-      $code .= $this->indent(3) . "\$this->createIndex('{$index['name']}', '{$table->name}', '".implode(',', $index['columns'])."', {$index['unique']}); \n";
+      $code .= $this->indent(3) . "\$this->createIndex('{$table->name}_{$i}', '{$table->name}', '".implode(',', $index['columns'])."', {$index['unique']}); \n";
+      $i++;
       if(!$this->ignoreSQLiteChecks){
         $code .= $this->indent(2) . "endif;\n";
       }
@@ -366,7 +357,6 @@ EOS;
 
       return $result;
     }
-
 
 }
 
