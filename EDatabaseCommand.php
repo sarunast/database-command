@@ -250,8 +250,10 @@ EOS;
             $code .= $this->indent(2) . "if ((Yii::app()->db->schema instanceof CSqliteSchema) == false):\n";
         }
 
+        $i = 1;
         foreach ($table->foreignKeys as $name => $foreignKey) {
-            $code .= $this->indent(3) . "\$this->addForeignKey('fk_{$table->name}_{$foreignKey[0]}_{$name}', '{$table->name}', '{$name}', '{$foreignKey[0]}', '{$foreignKey[1]}', 'CASCADE', 'CASCADE'); // FIX RELATIONS \n";
+            $code .= $this->indent(3) . "\$this->addForeignKey('fk_{$table->name}_{$i}', '{$table->name}', '{$name}', '{$foreignKey[0]}', '{$foreignKey[1]}', '{$foreignKey[2]}', '{$foreignKey[3]}'); // FIX RELATIONS \n";
+            $i++;
         }
 
         if(!$this->ignoreSQLiteChecks){
@@ -278,20 +280,37 @@ EOS;
         }
 
         $checker = false;
+        $addIndexes = array();
 
         foreach ($indexes as $index) {
             if (!isset($table->foreignKeys[$index['Column_name']])) {
-                $unique = !$index['Non_unique'] ? 'True' : 'False';
-                $code .= $this->indent(3) . "\$this->createIndex('index_{$index['Table']}_{$index['Column_name']}', '{$index['Table']}', '{$index['Column_name']}', {$unique}); \n";
-                $checker = true;
+                $key = $index['Key_name'];
+                if (!isset($addIndexes[$key])) {
+                    $addIndexes[$key] = array(
+                        'name' => 'index_'.$index['Column_name'],
+                        'columns' => array(),
+                        'unique'=> !$index['Non_unique'] ? 'True' : 'False',
+                    );
+                    $checker = true;
+                }
+                $addIndexes[$key]['columns'][] = $index['Column_name'];
             }
-
-        }
-        if(!$this->ignoreSQLiteChecks){
-            $code .= $this->indent(2) . "endif;\n";
         }
 
-        //remove everything if there were no results
+        if (!$checker) {
+            return false;
+        }
+
+        $i = 1;
+        foreach ($addIndexes as $index) {
+            $code .= $this->indent(3) . "\$this->createIndex('{$table->name}_{$i}', '{$table->name}', '".implode(',', $index['columns'])."', {$index['unique']}); \n";
+            $i++;
+            if(!$this->ignoreSQLiteChecks){
+                $code .= $this->indent(2) . "endif;\n";
+            }
+        }
+
+        //remove everything if there are no results
         return $checker ? $code : '';
     }
 
@@ -332,17 +351,15 @@ EOS;
 
             $result .= " DEFAULT '{$col->defaultValue}'";
         }
-        if ($col->isPrimaryKey) {
-//            $result .= " PRIMARY KEY";
-        }
+/*        if ($col->isPrimaryKey) {
+            $result .= " PRIMARY KEY";
+        }*/
         if ($col->autoIncrement) {
             $result .= " AUTO_INCREMENT";
         }
 
         return $result;
     }
-
-
 }
 
 ?>
