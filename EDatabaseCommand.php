@@ -264,8 +264,7 @@ EOS;
       }
 
       foreach ($table->foreignKeys as $name => $foreignKey) {
-        $code .= $this->indent(3) . "\$this->addForeignKey(
-         'fk_{$this->firstLetters($table->name)}_{$this->firstLetters($foreignKey[0])}_{$name}', '{$table->name}', '{$name}', '{$foreignKey[0]}', '{$foreignKey[1]}', 'CASCADE', 'CASCADE'); // FIX RELATIONS \n";
+        $code .= $this->indent(3) . "\$this->addForeignKey('fk_{$this->firstLetters($table->name)}_{$this->firstLetters($foreignKey[0])}_{$name}', '{$table->name}', '{$name}', '{$foreignKey[0]}', '{$foreignKey[1]}', 'CASCADE', 'CASCADE'); // FIX RELATIONS \n";
       }
 
       if(!$this->ignoreSQLiteChecks){
